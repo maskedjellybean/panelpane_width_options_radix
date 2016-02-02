@@ -1,0 +1,63 @@
+<?php
+/**
+ * @file
+ *
+ */
+
+function panelpane_width_options_radix_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'page_manager' || $module == 'panels') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+
+/**
+ * Implements template_preprocess_html().
+ */
+function panelpane_width_options_radix_preprocess_html(&$variables) {
+  // Add class to body if page has panels/is page manager page so we can use it in CSS
+  if (module_exists('page_manager') && count(page_manager_get_current_page())) {
+    $variables['is_panel'] = TRUE;
+    $variables['classes_array'][] = 'has-panels';
+  }
+}
+
+
+function panelpane_width_options_radix_preprocess_panels_pane(&$variables) {
+  // Check to make sure we're on a layout that has been configured properly.
+  // @TODO refactor all Radix panel layout templates so that this isn't necessary.
+  if (($variables['display']->layout === 'radix_boxton_pwo' && $variables['pane']->panel === 'contentmain')
+    || ($variables['display']->layout === 'radix_geary_pwo' && $variables['pane']->panel === 'header')
+    || ($variables['display']->layout === 'radix_sutro_pwo' && $variables['pane']->panel === 'header')
+    || ($variables['display']->layout === 'radix_pond_pwo' && ($variables['pane']->panel === 'header' || $variables['pane']->panel === 'footer'))
+    || ($variables['display']->layout === 'radix_brenham_pwo' && $variables['pane']->panel === 'header')
+    || ($variables['display']->layout === 'radix_brenham_flipped_pwo' && $variables['pane']->panel === 'header')
+    ) {
+
+    // Set class for width of pane
+    if (isset($variables['pane']->style['settings']['panelpane_width_options_form']['pane_width']) && $variables['pane']->style['settings']['panelpane_width_options_form']['pane_width'] === 'full') {
+      if (isset($variables['classes_array'])) {
+        $variables['classes_array'][] = 'pane-width--full';
+      }
+      else {
+        $variables['classes_array'] = array('pane-width--full');
+      }
+    }
+    // If pane width setting is set to container or has not been set at all, add .container class
+    else {
+      if (isset($variables['classes_array'])) {
+        $variables['classes_array'][] = 'container';
+        $variables['classes_array'][] = 'pane-width--container';
+      }
+      else {
+        $variables['classes_array'] = array('container', 'pane-width--container');
+      }
+    }
+
+    // Add optional CSS classes to pane
+    if (isset($variables['pane']->style['settings']['panelpane_width_options_form']['pane_classes'])) {
+      $new_classes_array = explode(' ', $variables['pane']->style['settings']['panelpane_width_options_form']['pane_classes']);
+      $variables['classes_array'] = array_merge($new_classes_array, $variables['classes_array']);
+    }
+  }
+}

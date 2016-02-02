@@ -1,0 +1,7 @@
+name = Panel Pane Width Options Radix
+desciption = Adds a Panels pane style plugin to allow setting width of panes when using Radix theme. Uses Bootstrap .container class to set width.
+dependencies[] = panels
+dependencies[] = ctools
+;dependencies[] = radix
+core = 7.x
+version = "7.x-1.0"
